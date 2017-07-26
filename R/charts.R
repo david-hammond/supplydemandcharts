@@ -102,7 +102,7 @@ supply.demand.consumer.surplus = function(y.axis = "Price", x.axis = "Quantity",
   p$intersection = intersection
   return(p)
 }
-supply.demand.blank = function(){
+supply.demand.blank = function(y.axis = "Price", x.axis = "Quantity"){
   require(Hmisc)
   require(ggplot2)
   require(proxy)
@@ -147,8 +147,6 @@ shift.demand = function(direction = "right", y.axis = "Price", x.axis = "Quantit
   demand2 <- p$demand + shift
   intersectS1D2 <- approxIntersection(p$supply, demand2)
   intersection <- data.frame(rbind(p$intersection, intersectS1D2))
-
-
   textAnnotations <- data.frame(label = c("D2"),
                                 x = shift.x,  # DF of line labels
                                 y = shift.y)
@@ -159,18 +157,24 @@ shift.demand = function(direction = "right", y.axis = "Price", x.axis = "Quantit
   p <- p + geom_segment(data = intersection,  # Add dotted lines
                             aes(x = x, y = -1, xend = x, yend = y),
                             lty = 2)
-  p <- p + geom_segment(data = intersection,  # Add dotted lines
-                            aes(x = axis.x, y = y, xend = x, yend = y),
+
+  p <- p + geom_segment(data = intersection,  x = axis.x, # Add dotted lines
+                            aes( y = y, xend = x, yend = y),
                             lty = 2)
+
   p <- p + geom_text(data = textAnnotations,  # Add curve labels
                          aes(x = x, y = y, label = label))
+
+
   p <- p + scale_x_continuous(x.axis, expand = c(0, 0),
                               limits = c(axis.x,10),# Clean up axis
                                   breaks = intersection$x,
                                   labels = expression(Q[1], Q[2]))
+
   p <- p + scale_y_continuous(y.axis, expand = c(0, 0),  # Clean up axis
                                   breaks = intersection$y,
                                   labels = expression(P[1],P[2]))
+
   return(p)
 }
 
@@ -186,7 +190,6 @@ shift.supply = function(direction = "right", y.axis = "Price", x.axis = "Quantit
   intersectS1D2 <- approxIntersection(supply2, p$demand)
   intersection <- data.frame(rbind(p$intersection, intersectS1D2))
 
-
   textAnnotations <- data.frame(label = c("S2"),
                                 x = shift.x,  # DF of line labels
                                 y = shift.y)
@@ -194,11 +197,13 @@ shift.supply = function(direction = "right", y.axis = "Price", x.axis = "Quantit
                     size = 1, colour = "BLUE")
   p = p + geom_point(data = intersection,  # Add points at intersections
                      aes(x = x, y = y), size = 3)
+
   p <- p + geom_segment(data = intersection,  # Add dotted lines
                         aes(x = x, y = 0, xend = x, yend = y),
                         lty = 2)
-  p <- p + geom_segment(data = intersection,  # Add dotted lines
-                        aes(x = axis.x, y = y, xend = x, yend = y),
+
+  p <- p + geom_segment(data = intersection, x = axis.x, # Add dotted lines
+                        aes( y = y, xend = x, yend = y),
                         lty = 2)
   p <- p + geom_text(data = textAnnotations,  # Add curve labels
                      aes(x = x, y = y, label = label))
